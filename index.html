@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools Hub</title>
+
+<!-- Preload semua lib yang dipakai tools — dimuat di background saat dashboard tampil -->
+<!-- Hasilnya: tools buka instan, tidak perlu download lagi -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+
+<style>
+:root {
+  --bg:#f3f0ea;--surface:#fff;--surface2:#f8f6f1;--border:#e0dbd2;
+  --text:#1a1714;--text-muted:#6a6460;--text-hint:#aaa49d;
+  --accent:#236b42;--accent-light:#e6f3ec;--accent-mid:#4c9e73;
+  --r:12px;--rsm:8px;
+  --sh:0 2px 8px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.05);
+  --sh-hover:0 6px 20px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.07);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#131210;--surface:#1c1a17;--surface2:#222018;--border:#2c2a24;
+  --text:#ede8e0;--text-muted:#9a948c;--text-hint:#54504a;
+  --accent:#4cad76;--accent-light:#162b1e;--accent-mid:#3a9060;
+}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;line-height:1.6}
+
+#dashboard{display:block}
+#toolView{display:none}
+
+/* Loading overlay */
+#loader{display:none;position:fixed;inset:0;background:rgba(10,10,10,.55);
+  z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#loader.on{display:flex}
+.spin{width:46px;height:46px;border:4px solid rgba(255,255,255,.2);
+  border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-label{color:rgba(255,255,255,.9);font-size:14px;font-weight:500}
+
+/* Preload status bar — tampil sementara saat libs masih loading */
+#preloadBar{
+  position:fixed;bottom:0;left:0;right:0;z-index:1000;
+  background:#1a1714;color:#e0dbd2;font-size:12px;
+  padding:7px 16px;display:flex;align-items:center;gap:8px;
+  transition:opacity .4s;opacity:0;pointer-events:none;
+}
+#preloadBar.show{opacity:1}
+.preload-dot{width:7px;height:7px;border-radius:50%;background:#4cad76;
+  animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* Back bar */
+#backBar{display:none;background:var(--surface);border-bottom:1px solid var(--border);
+  padding:8px 20px;align-items:center;gap:10px;position:sticky;top:0;z-index:200}
+#backBar.on{display:flex}
+#backBtn{display:inline-flex;align-items:center;gap:6px;background:transparent;
+  border:1px solid var(--border);color:var(--text-muted);border-radius:var(--rsm);
+  padding:5px 13px;font-size:12.5px;cursor:pointer;
+  font-family:-apple-system,sans-serif;transition:.15s}
+#backBtn:hover{background:var(--surface2);color:var(--accent);border-color:var(--accent-mid)}
+#backLabel{font-size:12px;color:var(--text-hint)}
+
+/* Header */
+.hub-header{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:16px 32px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50}
+.logo{width:42px;height:42px;background:var(--accent);border-radius:var(--rsm);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.htext h1{font-size:18px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
+.htext p{font-size:12px;color:var(--text-muted)}
+.hbadge{margin-left:auto;background:var(--accent-light);color:var(--accent);
+  border:1px solid var(--accent-mid);border-radius:20px;font-size:11px;font-weight:600;padding:3px 10px}
+
+.hub-main{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+.hero{text-align:center;margin-bottom:48px}
+.hero h2{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--text-muted);max-width:480px;margin:0 auto}
+.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--text-hint);margin-bottom:14px}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:40px}
+
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  box-shadow:var(--sh);padding:24px 20px 48px;cursor:pointer;
+  transition:box-shadow .18s,transform .18s,border-color .18s;
+  display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;user-select:none}
+.tc:hover{box-shadow:var(--sh-hover);transform:translateY(-2px);border-color:var(--accent-mid)}
+.tc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--cc,var(--accent));opacity:0;transition:opacity .18s}
+.tc:hover::before{opacity:1}
+.tc:active{transform:none;box-shadow:var(--sh)}
+.tc-icon{width:48px;height:48px;border-radius:var(--rsm);display:flex;align-items:center;
+  justify-content:center;font-size:26px;background:var(--ic,var(--accent-light));flex-shrink:0}
+.tc-title{font-size:15px;font-weight:700;margin-bottom:5px;letter-spacing:-.2px}
+.tc-desc{font-size:12.5px;color:var(--text-muted);line-height:1.55}
+.tc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tc-tag{font-size:10.5px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:4px;padding:2px 7px;color:var(--text-muted)}
+.tc-arr{position:absolute;bottom:18px;right:18px;font-size:18px;
+  color:var(--text-hint);transition:color .18s,transform .18s}
+.tc:hover .tc-arr{color:var(--accent);transform:translate(2px,-2px)}
+/* Disabled state saat libs belum siap */
+.tc.loading-libs{opacity:.6;cursor:wait}
+.tc.loading-libs::after{content:'⏳';position:absolute;top:10px;right:12px;font-size:14px}
+
+.ibox{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px 24px;display:flex;gap:16px;align-items:flex-start}
+.ibox-ico{font-size:22px;flex-shrink:0;margin-top:1px}
+.ibox-title{font-size:13.5px;font-weight:700;margin-bottom:4px}
+.ibox-text{font-size:12.5px;color:var(--text-muted);line-height:1.6}
+.ibox-text code{background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+  padding:1px 6px;font-family:'Courier New',monospace;font-size:11.5px;color:var(--text)}
+
+@media(max-width:600px){
+  .hub-main{padding:24px 16px 60px}.hero h2{font-size:22px}
+  .hub-header{padding:12px 16px}.hbadge{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spin"></div>
+  <div class="spin-label" id="loaderLabel">Memuat tool...</div>
+</div>
+
+<!-- Status bar preload libs -->
+<div id="preloadBar">
+  <div class="preload-dot"></div>
+  <span id="preloadMsg">Memuat library di background...</span>
+</div>
+
+<div id="backBar">
+  <button id="backBtn" onclick="showDashboard()">← Dashboard</button>
+  <span id="backLabel"></span>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header class="hub-header">
+    <div class="logo">🧰</div>
+    <div class="htext">
+      <h1>Tools Hub</h1>
+      <p>Kumpulan tools untuk operasional toko</p>
+    </div>
+    <div class="hbadge">3 Tools</div>
+  </header>
+
+  <main class="hub-main">
+    <div class="hero">
+      <h2>Selamat datang! 👋</h2>
+      <p>Pilih tool di bawah — konten dimuat langsung tanpa pindah halaman.</p>
+    </div>
+
+    <div class="sec-label">Pilih Tool</div>
+    <div class="tools-grid">
+      <div class="tc" id="card-konversi" onclick="loadTool('konversi-satuan','Konversi Satuan → Dus')" style="--cc:#236b42;--ic:#e6f3ec;">
+        <div class="tc-icon">📦</div>
+        <div>
+          <div class="tc-title">Konversi Satuan → Dus</div>
+          <div class="tc-desc">Upload Excel/CSV dan konversi satuan pcs/bungkus ke dus dengan aturan kustom per produk.</div>
+          <div class="tc-tags"><span class="tc-tag">Excel / CSV</span><span class="tc-tag">Konversi</span><span class="tc-tag">Export</span></div>
+        </div>
+        <span class="tc-arr">↗</span>
+      </div>
+
+      <div class="tc" id="card-collect" onclick="loadTool('collect-db','Collect DB — Merger')" style="--cc:#1756a0;--ic:#e8f1fc;">
+        <div class="tc-icon">🗃️</div>
+        <div>
+          <div class="tc-title">Collect DB — Merger</div>
+          <div class="tc-desc">Gabungkan beberapa file Excel/CSV distributor menjadi satu database stok yang bersih.</div>
+          <div class="tc-tags"><span class="tc-tag">Multi-file</span><span class="tc-tag">Merge</span><span class="tc-tag">Database</span></div>
+        </div>
+        <span class="tc-arr">↗</span>
+      </div>
+
+      <div class="tc" id="card-matcher" onclick="loadTool('stock-matcher','Stock Name Matcher')" style="--cc:#5b3ea8;--ic:#f0ecfb;">
+        <div class="tc-icon">🔍</div>
+        <div>
+          <div class="tc-title">Stock Name Matcher</div>
+          <div class="tc-desc">Cocokkan nama barang dari distributor secara otomatis dengan fuzzy matching. 100% gratis.</div>
+          <div class="tc-tags"><span class="tc-tag">Fuzzy Match</span><span class="tc-tag">Stok</span><span class="tc-tag">Gratis</span></div>
+        </div>
+        <span class="tc-arr">↗</span>
+      </div>
+    </div>
+
+    <div class="sec-label" style="margin-top:4px;">Referensi</div>
+    <div class="tools-grid" style="margin-bottom:32px;">
+      <div class="tc" id="card-panduan" onclick="loadTool('panduan-konversi','Panduan Konversi Satuan')" style="--cc:#a85c08;--ic:#fef5e9;">
+        <div class="tc-icon">📖</div>
+        <div>
+          <div class="tc-title">Panduan Konversi Satuan</div>
+          <div class="tc-desc">Dokumentasi lengkap cara menggunakan fitur konversi satuan ke dus.</div>
+          <div class="tc-tags"><span class="tc-tag">Panduan</span><span class="tc-tag">Dokumentasi</span></div>
+        </div>
+        <span class="tc-arr">↗</span>
+      </div>
+    </div>
+
+    <div class="ibox">
+      <div class="ibox-ico">ℹ️</div>
+      <div>
+        <div class="ibox-title">Catatan Deploy</div>
+        <div class="ibox-text">
+          Navigasi antar tool tanpa reload — library dimuat otomatis di background saat dashboard terbuka sehingga tool buka lebih cepat.<br><br>
+          Untuk <strong>Stock Name Matcher</strong>: isi <code>SPREADSHEET_ID</code> di <code>Code.gs</code> dan aktifkan <strong>Drive API v2</strong>.
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TOOL CONTAINER -->
+<div id="toolView"></div>
+
+<script>
+// ============================================================
+// PRELOAD TRACKING
+// Deteksi kapan libs dari <script defer> selesai dimuat
+// Globals yang dicek: window.XLSX, window.Chart, window.JSZip
+// ============================================================
+var LIBS_READY = false;
+var pendingToolLoad = null; // simpan tool yg diklik saat libs belum siap
+
+function checkLibsReady() {
+  if (window.XLSX && window.Chart && window.JSZip) {
+    LIBS_READY = true;
+    hidePreloadBar();
+    // Kalau ada tool yang pending (diklik sebelum libs siap), jalankan sekarang
+    if (pendingToolLoad) {
+      var t = pendingToolLoad;
+      pendingToolLoad = null;
+      fetchAndRender(t.page, t.label);
+    }
+    return true;
+  }
+  return false;
+}
+
+// Poll sampai semua libs ready (libs pakai defer, jadi async)
+var libPoller = setInterval(function() {
+  if (checkLibsReady()) clearInterval(libPoller);
+}, 100);
+
+// Timeout safety: setelah 15 detik, anggap ready aja (hindari stuck)
+setTimeout(function() {
+  clearInterval(libPoller);
+  if (!LIBS_READY) {
+    LIBS_READY = true;
+    hidePreloadBar();
+    if (pendingToolLoad) {
+      var t = pendingToolLoad;
+      pendingToolLoad = null;
+      fetchAndRender(t.page, t.label);
+    }
+  }
+}, 15000);
+
+// Tampilkan preload bar setelah 300ms (beri waktu libs cepat load dari cache)
+setTimeout(function() {
+  if (!LIBS_READY) {
+    document.getElementById('preloadBar').classList.add('show');
+  }
+}, 300);
+
+function hidePreloadBar() {
+  var bar = document.getElementById('preloadBar');
+  bar.style.opacity = '0';
+  setTimeout(function() { bar.classList.remove('show'); }, 400);
+}
+
+// ============================================================
+// SPA ENGINE
+// ============================================================
+var currentTool = null;
+
+function loadTool(page, label) {
+  if (!LIBS_READY) {
+    // Libs belum siap — simpan dan tunggu
+    pendingToolLoad = { page: page, label: label };
+    document.getElementById('preloadMsg').textContent = 'Menunggu library siap, lalu membuka ' + label + '...';
+    document.getElementById('preloadBar').classList.add('show');
+    return;
+  }
+  fetchAndRender(page, label);
+}
+
+function fetchAndRender(page, label) {
+  showLoader('Memuat ' + label + '...');
+
+  google.script.run
+    .withSuccessHandler(function(html) {
+      if (!html) {
+        hideLoader();
+        alert('Tool tidak ditemukan: ' + page);
+        return;
+      }
+      currentTool = page;
+      renderTool(html, label);
+    })
+    .withFailureHandler(function(err) {
+      hideLoader();
+      alert('Gagal memuat tool.\n' + (err.message || String(err)));
+    })
+    .getPageHtml(page);
+}
+
+function renderTool(html, label) {
+  var container = document.getElementById('toolView');
+
+  // Pisah script dari HTML
+  var scripts = [];
+  var htmlNoScripts = html.replace(/<script([^>]*)>([\s\S]*?)<\/script>/gi, function(_, attrs, content) {
+    var srcMatch = attrs.match(/src=["']([^"']+)["']/);
+    scripts.push({ src: srcMatch ? srcMatch[1] : null, content: content });
+    return '';
+  });
+
+  // Inject HTML (styles aktif langsung)
+  container.innerHTML = htmlNoScripts;
+
+  // Jalankan scripts berurutan, skip ext scripts yang sudah di-preload
+  execScripts(scripts, 0, function() {
+    hideLoader();
+    document.getElementById('dashboard').style.display = 'none';
+    container.style.display = 'block';
+    document.getElementById('backBar').classList.add('on');
+    document.getElementById('backLabel').textContent = label;
+    window.scrollTo(0, 0);
+  });
+}
+
+// URL libs yang sudah di-preload di <head> — tidak perlu load ulang
+var PRELOADED_URLS = [
+  'cdnjs.cloudflare.com/ajax/libs/xlsx',
+  'cdnjs.cloudflare.com/ajax/libs/Chart.js',
+  'cdnjs.cloudflare.com/ajax/libs/jszip',
+];
+
+function isPreloaded(src) {
+  if (!src) return false;
+  return PRELOADED_URLS.some(function(u) { return src.indexOf(u) !== -1; });
+}
+
+function execScripts(scripts, index, done) {
+  if (index >= scripts.length) { done(); return; }
+
+  var s = scripts[index];
+
+  if (s.src) {
+    if (isPreloaded(s.src)) {
+      // Sudah di-preload — skip langsung, tidak perlu load lagi
+      execScripts(scripts, index + 1, done);
+      return;
+    }
+    // Ext script belum di-preload — load sekarang
+    var el = document.createElement('script');
+    el.src = s.src;
+    el.onload  = function() { execScripts(scripts, index + 1, done); };
+    el.onerror = function() {
+      console.warn('Gagal load:', s.src);
+      execScripts(scripts, index + 1, done);
+    };
+    document.head.appendChild(el);
+  } else {
+    // Inline script
+    var el2 = document.createElement('script');
+    el2.textContent = s.content;
+    document.head.appendChild(el2);
+    execScripts(scripts, index + 1, done);
+  }
+}
+
+function showDashboard() {
+  currentTool = null;
+  var container = document.getElementById('toolView');
+  container.innerHTML = '';
+  container.style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('backBar').classList.remove('on');
+  document.getElementById('backLabel').textContent = '';
+  window.scrollTo(0, 0);
+}
+
+function showLoader(msg) {
+  document.getElementById('loaderLabel').textContent = msg || 'Memuat...';
+  document.getElementById('loader').classList.add('on');
+}
+
+function hideLoader() {
+  document.getElementById('loader').classList.remove('on');
+}
+</script>
+</body>
+</html>

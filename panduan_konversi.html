@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panduan — Aplikasi Konversi Satuan ke Dus</title>
+<style>
+  :root {
+    --green: #1e6b3e;
+    --green-light: #e5f3ec;
+    --green-mid: #3a9960;
+    --blue: #1550a0;
+    --blue-light: #e7f0fc;
+    --orange: #a05810;
+    --orange-light: #fef3e6;
+    --red: #b53025;
+    --red-light: #fceeed;
+    --purple: #5b3ea8;
+    --purple-light: #f0ecfb;
+    --text: #1a1714;
+    --text-muted: #5a5550;
+    --text-hint: #999490;
+    --bg: #f5f2ec;
+    --surface: #fff;
+    --border: #e2ddd5;
+    --radius: 12px;
+    --radius-sm: 7px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(135deg, #1e6b3e 0%, #155030 50%, #0e3820 100%);
+    color: #fff;
+    padding: 60px 32px 52px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .cover-badge {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 12px;
+    font-family: -apple-system, sans-serif;
+    letter-spacing: .5px;
+    margin-bottom: 20px;
+  }
+  .cover-icon { font-size: 56px; display: block; margin-bottom: 18px; filter: drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
+  .cover h1 { font-size: 30px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 10px; }
+  .cover p { font-size: 15px; color: rgba(255,255,255,.8); max-width: 480px; margin: 0 auto 24px; font-family: -apple-system, sans-serif; }
+  .cover-meta {
+    display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;
+    font-size: 12.5px; color: rgba(255,255,255,.65); font-family: -apple-system, sans-serif;
+  }
+  .cover-meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 36px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toc-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--text-muted); margin-bottom: 14px; font-family: -apple-system, sans-serif; }
+  .toc ol { list-style: none; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; display: flex; align-items: baseline; gap: 10px; padding: 5px 0; border-bottom: 1px dashed var(--border); font-family: -apple-system, sans-serif; font-size: 13.5px; }
+  .toc ol li:last-child { border-bottom: none; }
+  .toc ol li::before { content: counter(toc); display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; background: var(--green); color: #fff; border-radius: 50%; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .toc a { color: var(--green); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 48px; }
+  .section-anchor { display: block; height: 0; margin-top: -20px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--green-light);
+  }
+  .section-num {
+    width: 38px; height: 38px;
+    background: var(--green);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700;
+    flex-shrink: 0;
+    font-family: -apple-system, sans-serif;
+  }
+  .section h2 { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
+  .section h2 span { font-size: 13px; font-weight: 400; color: var(--text-muted); font-family: -apple-system, sans-serif; margin-left: 8px; }
+
+  /* ── STEP CARD ── */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .step-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+    width: 44px; height: 44px;
+    background: var(--green-light);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; font-family: -apple-system, sans-serif; }
+  .step-desc { font-size: 13.5px; color: var(--text-muted); font-family: -apple-system, sans-serif; line-height: 1.6; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 13px 16px;
+    margin: 14px 0;
+    font-size: 13px;
+    font-family: -apple-system, sans-serif;
+    line-height: 1.6;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout-green { background: var(--green-light); border-left: 3px solid var(--green); color: #1a4a2e; }
+  .callout-blue { background: var(--blue-light); border-left: 3px solid var(--blue); color: #0e2d60; }
+  .callout-orange { background: var(--orange-light); border-left: 3px solid var(--orange); color: #5c3006; }
+  .callout-red { background: var(--red-light); border-left: 3px solid var(--red); color: #6b1c14; }
+  .callout-purple { background: var(--purple-light); border-left: 3px solid var(--purple); color: #311a6e; }
+
+  /* ── VISUAL MOCKUP ── */
+  .mockup {
+    background: #f0ede6;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 14px 0;
+    font-family: -apple-system, sans-serif;
+  }
+  .mockup-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .mockup-title { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; flex: 1; text-align: center; }
+  .mockup-body { background: #fff; border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+
+  /* ── UPLOAD ZONE MOCK ── */
+  .upload-mock {
+    border: 2px dashed #c5bfb4;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    background: #f8f6f1;
+    margin: 10px;
+  }
+  .upload-mock .um-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+  .upload-mock p { font-size: 13px; color: #6a6460; }
+  .upload-mock strong { color: var(--green); }
+
+  /* ── PILL / BADGE ── */
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    font-weight: 600;
+    font-family: -apple-system, sans-serif;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-orange { background: var(--orange-light); color: var(--orange); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .badge-purple { background: var(--purple-light); color: var(--purple); }
+
+  /* ── BUTTON MOCK ── */
+  .btn-mock {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: -apple-system, sans-serif;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid transparent;
+  }
+  .btn-mock.green { background: var(--green); color: #fff; }
+  .btn-mock.outline { background: transparent; border-color: #c5bfb4; color: #5a5550; }
+  .btn-mock.orange { background: transparent; border-color: var(--orange); color: var(--orange); }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; margin: 14px 0; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-family: -apple-system, sans-serif; font-size: 13px; }
+  thead { background: #f8f6f1; }
+  thead th { padding: 9px 13px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 8px 13px; color: var(--text); vertical-align: middle; }
+  tbody tr:nth-child(even) { background: #faf9f6; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    justify-content: center;
+  }
+  .flow-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12.5px;
+    font-family: -apple-system, sans-serif;
+    font-weight: 600;
+    text-align: center;
+    min-width: 100px;
+  }
+  .flow-box.active { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .flow-arr { font-size: 18px; color: var(--text-muted); padding: 0 8px; flex-shrink: 0; }
+
+  /* ── FAQ ── */
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .faq-q {
+    padding: 13px 16px;
+    font-weight: 600;
+    font-family: -apple-system, sans-serif;
+    font-size: 13.5px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .faq-q::before { content: 'T:'; color: var(--green); font-weight: 800; flex-shrink: 0; }
+  .faq-a {
+    padding: 0 16px 13px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: -apple-system, sans-serif;
+    line-height: 1.6;
+    display: flex;
+    gap: 10px;
+  }
+  .faq-a::before { content: 'J:'; color: var(--blue); font-weight: 800; flex-shrink: 0; }
+
+  /* ── CONVERSION TABLE ── */
+  .conv-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin: 14px 0;
+  }
+  .conv-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); margin-bottom: 12px; font-family: -apple-system, sans-serif; }
+  .conv-product { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .conv-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-family: -apple-system, sans-serif; font-size: 13px; border-bottom: 1px dashed var(--border); }
+  .conv-row:last-child { border-bottom: none; }
+  .conv-from { min-width: 80px; font-weight: 600; }
+  .conv-arrow { color: var(--text-hint); }
+  .conv-to { color: var(--green); font-weight: 700; }
+  .conv-formula { color: var(--text-muted); font-size: 11.5px; margin-left: auto; }
+
+  /* ── HEADER TABS MOCK ── */
+  .tabs-mock { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 12px; gap: 0; overflow-x: auto; }
+  .tab-mock { padding: 7px 14px; font-size: 12px; font-weight: 600; font-family: -apple-system, sans-serif; color: var(--text-muted); white-space: nowrap; border-bottom: 2.5px solid transparent; margin-bottom: -2px; }
+  .tab-mock.on { color: var(--green); border-bottom-color: var(--green); }
+
+  /* ── TOGGLE MOCK ── */
+  .toggle-mock { display: inline-flex; align-items: center; gap: 7px; font-family: -apple-system, sans-serif; font-size: 12.5px; }
+  .track { width: 30px; height: 17px; border-radius: 9px; position: relative; }
+  .track.off { background: #c5bfb4; }
+  .track.on { background: var(--green); }
+  .track::after { content: ''; position: absolute; top: 2px; width: 13px; height: 13px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .track.off::after { left: 2px; }
+  .track.on::after { left: 15px; }
+
+  /* ── STATUS LABEL ── */
+  .status-legend { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; font-family: -apple-system, sans-serif; }
+  .status-row { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+  .status-row .badge { min-width: 90px; text-align: center; }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border); margin: 36px 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-hint);
+    font-size: 12.5px;
+    font-family: -apple-system, sans-serif;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── STICKY NAV ── */
+  .sticky-nav {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  .sticky-btn {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 28px;
+    padding: 9px 16px;
+    font-size: 12.5px;
+    font-family: -apple-system, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(30,107,62,.35);
+    transition: .18s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+  }
+  .sticky-btn:hover { background: #155030; transform: translateY(-2px); }
+  .sticky-btn.secondary {
+    background: var(--surface);
+    color: var(--green);
+    border: 1.5px solid var(--green);
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+  .sticky-btn.secondary:hover { background: var(--green-light); }
+
+  /* ── WALKTHROUGH ── */
+  .walkthrough {
+    counter-reset: wk;
+    position: relative;
+  }
+  .walkthrough::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--green), var(--green-light));
+    border-radius: 2px;
+  }
+  .wk-step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .wk-num {
+    counter-increment: wk;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: -apple-system, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--green);
+  }
+  .wk-num::after { content: counter(wk); }
+  .wk-content {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    margin-top: 4px;
+  }
+  .wk-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    font-family: -apple-system, sans-serif;
+  }
+  .wk-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: -apple-system, sans-serif;
+    line-height: 1.65;
+  }
+  .wk-result {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--green-light);
+    border-radius: var(--radius-sm);
+    font-size: 12.5px;
+    color: #1a4a2e;
+    font-family: -apple-system, sans-serif;
+    border-left: 3px solid var(--green);
+  }
+
+  /* ── CASE STUDY ── */
+  .case-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .case-header {
+    background: linear-gradient(90deg, var(--green) 0%, #2a8a55 100%);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .case-icon { font-size: 22px; }
+  .case-title { font-size: 14px; font-weight: 700; font-family: -apple-system, sans-serif; }
+  .case-subtitle { font-size: 12px; opacity: .8; font-family: -apple-system, sans-serif; margin-top: 2px; }
+  .case-body { padding: 18px 20px; }
+  .case-section { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--text-muted); margin-bottom: 8px; font-family: -apple-system, sans-serif; }
+  .data-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 100px;
+    gap: 8px;
+    padding: 6px 10px;
+    font-family: -apple-system, sans-serif;
+    font-size: 12.5px;
+    border-bottom: 1px dashed var(--border);
+    align-items: center;
+  }
+  .data-row.header { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--text-muted); background: var(--bg); border-radius: var(--radius-sm); border-bottom: none; margin-bottom: 4px; }
+  .data-row .qty-dus { color: var(--green); font-weight: 700; }
+  .data-row .status-ok { color: var(--green); font-size: 11px; }
+  .data-row .status-err { color: var(--red); font-size: 11px; }
+
+  /* ── TIPS ── */
+  .tip-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  @media(max-width:600px) { .tip-grid { grid-template-columns: 1fr; } }
+  .tip-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .tip-card-icon { font-size: 24px; display: block; margin-bottom: 8px; }
+  .tip-card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 5px; font-family: -apple-system, sans-serif; }
+  .tip-card-desc { font-size: 12.5px; color: var(--text-muted); font-family: -apple-system, sans-serif; line-height: 1.6; }
+
+  /* ── TROUBLESHOOT ── */
+  .trouble-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .trouble-problem {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 13px 16px;
+    background: var(--red-light);
+    border-bottom: 1px solid #f0c5c0;
+  }
+  .trouble-problem-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .trouble-problem-text { font-size: 13.5px; font-weight: 600; font-family: -apple-system, sans-serif; color: #6b1c14; }
+  .trouble-cause {
+    padding: 10px 16px;
+    background: var(--orange-light);
+    border-bottom: 1px solid #f0d5b0;
+    font-size: 12.5px;
+    font-family: -apple-system, sans-serif;
+    color: #5c3006;
+    display: flex;
+    gap: 8px;
+  }
+  .trouble-solution {
+    padding: 12px 16px;
+    background: var(--surface);
+    font-size: 13px;
+    font-family: -apple-system, sans-serif;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .trouble-solution ol, .trouble-solution ul { margin-left: 18px; margin-top: 6px; }
+  .trouble-solution li { margin-bottom: 4px; }
+
+  /* ── GLOSSARY ── */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media(max-width:600px) { .glossary-grid { grid-template-columns: 1fr; } }
+  .gloss-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 15px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .gloss-term {
+    background: var(--green-light);
+    color: var(--green);
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 9px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    font-family: -apple-system, sans-serif;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .gloss-def {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-family: -apple-system, sans-serif;
+    line-height: 1.55;
+  }
+
+  /* ── KEYBOARD SHORTCUTS ── */
+  kbd {
+    display: inline-block;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 7px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .cover { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .section { page-break-inside: avoid; }
+    .sticky-nav { display: none; }
+    .walkthrough::before { display: none; }
+    body { font-size: 13px; }
+    .container { padding: 20px; }
+  }
+
+  @media (max-width: 600px) {
+    .cover h1 { font-size: 22px; }
+    .flow { flex-direction: column; }
+    .flow-arr { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div style="padding:12px 20px 0;"><button onclick="goToDashboard()" style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #e0dbd2;color:#6a6460;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:-apple-system,sans-serif;" onmouseover="this.style.color='#236b42'" onmouseout="this.style.color='#6a6460'">← Dashboard</button></div>
+
+
+<!-- ═══ COVER ═══ -->
+<div class="cover">
+  <div class="cover-badge">📘 Panduan Pengguna · Versi 1.0</div>
+  <span class="cover-icon">⚖️</span>
+  <h1>Panduan Penggunaan<br>Aplikasi Konversi Satuan → Dus</h1>
+  <p>Panduan lengkap untuk mengonversi satuan penjualan (Rtg, DsK, Pcs, dll) menjadi satuan Dus secara otomatis dari file Excel</p>
+  <div class="cover-meta">
+    <span>📂 Format: .xlsx / .xls / .csv</span>
+    <span>🔒 100% Offline — data tidak dikirim ke mana pun</span>
+    <span>💾 Pengaturan tersimpan di browser</span>
+  </div>
+</div>
+
+<!-- ═══ CONTAINER ═══ -->
+<div class="container">
+
+  <!-- DAFTAR ISI -->
+  <div class="toc">
+    <div class="toc-title">📋 Daftar Isi</div>
+    <ol>
+      <li><a href="#s1">Gambaran Umum & Alur Kerja</a></li>
+      <li><a href="#s2">Langkah 1 — Upload File Excel</a></li>
+      <li><a href="#s3">Langkah 2 — Pemetaan Kolom</a></li>
+      <li><a href="#s4">Langkah 3 — Aturan Konversi</a></li>
+      <li><a href="#s5">Langkah 4 — Proses & Lihat Hasil</a></li>
+      <li><a href="#s6">Filter & Analisis Data</a></li>
+      <li><a href="#s7">Tab Pivot — Laporan Tabel Silang</a></li>
+      <li><a href="#s8">Download Hasil</a></li>
+      <li><a href="#s9">Referensi Satuan & Konversi</a></li>
+      <li><a href="#s10">Pertanyaan Umum (FAQ)</a></li>
+      <li><a href="#s11">Panduan Visual — Walkthrough Lengkap</a></li>
+      <li><a href="#s12">Contoh Kasus Nyata</a></li>
+      <li><a href="#s13">Tips & Trik Pengguna Mahir</a></li>
+      <li><a href="#s14">Panduan Mengatasi Masalah</a></li>
+      <li><a href="#s15">Glosarium Istilah</a></li>
+    </ol>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 1 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s1"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2>Gambaran Umum & Alur Kerja</h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:18px">
+      Aplikasi ini digunakan untuk mengubah data penjualan dari berbagai satuan (seperti <strong>Rtg, DsK, Pcs, Renceng</strong>) menjadi satu satuan seragam yaitu <strong>Dus</strong>. Proses dilakukan langsung di browser Anda — tidak perlu internet dan data tidak dikirim ke server mana pun.
+    </p>
+
+    <div class="flow">
+      <div class="flow-box active">📂 Upload<br>File Excel</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box active">🗂️ Petakan<br>Kolom</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box active">⚙️ Atur<br>Konversi</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box active">🔄 Proses</div>
+      <div class="flow-arr">→</div>
+      <div class="flow-box active">⬇️ Download<br>Hasil</div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div>
+        <strong>Apa yang dimaksud "konversi ke Dus"?</strong><br>
+        Misalnya ada 8 Renceng (Rtg) produk BMX Isi 80 Pcs. Karena 1 Dus berisi 8 Renceng, maka 8 Rtg = <strong>1 Dus</strong>. Aplikasi ini menghitung otomatis untuk semua produk sekaligus.
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div><strong>Persyaratan file:</strong> File Excel Anda harus memiliki minimal 3 kolom: <strong>Nama Barang</strong>, <strong>Satuan</strong>, dan <strong>Kuantitas</strong>. Kolom lain (kode barang, harga, region, dll) akan ikut disimpan di hasil download.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 2 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s2"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2>Langkah 1 — Upload File Excel <span>(.xlsx / .xls / .csv)</span></h2>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📂</div>
+      <div class="step-body">
+        <div class="step-title">Cara Upload File</div>
+        <div class="step-desc">Ada 2 cara: klik pada area bertulisan "Klik atau drag & drop", atau seret file dari folder komputer Anda langsung ke area tersebut.</div>
+      </div>
+    </div>
+
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="mockup-dot" style="background:#ff5f57"></div>
+        <div class="mockup-dot" style="background:#ffbd2e"></div>
+        <div class="mockup-dot" style="background:#28c840"></div>
+        <div class="mockup-title">📂 Upload File Excel</div>
+      </div>
+      <div class="mockup-body">
+        <div class="upload-mock">
+          <span class="um-icon">📊</span>
+          <p><strong>Klik</strong> atau drag &amp; drop file Excel di sini</p>
+          <p style="font-size:11px;color:#aaa49d;margin-top:4px">Mendukung .xlsx · .xls · .csv &nbsp;|&nbsp; Data tidak dikirim ke server</p>
+        </div>
+        <div style="padding:10px 12px;background:#e5f3ec;border-top:1px solid #c5bfb4;display:flex;align-items:center;gap:8px;font-family:-apple-system,sans-serif;font-size:12.5px">
+          <span>📋</span>
+          <span style="color:var(--green);font-weight:600;flex:1">CLOSING_FIX.xlsx</span>
+          <span style="color:#999;font-size:11px">245 KB</span>
+          <span style="color:var(--red);border:1px solid var(--red);border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer">✕ Batal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📋</div>
+      <div class="step-body">
+        <div class="step-title">Pilih Sheet (lembar kerja)</div>
+        <div class="step-desc">Jika file Excel Anda punya lebih dari 1 sheet, akan muncul dropdown untuk memilih sheet mana yang berisi data penjualan. Aplikasi otomatis memilih sheet bernama "Sheet1" jika ada.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">👁️</div>
+      <div class="step-body">
+        <div class="step-title">Cek Preview Data (opsional)</div>
+        <div class="step-desc">Klik tombol <span class="btn-mock outline">👁 Preview</span> di sudut kanan atas kartu Upload untuk melihat 50 baris pertama data Anda sebelum diproses. Ini untuk memastikan data sudah terbaca dengan benar.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🏷️</div>
+      <div class="step-body">
+        <div class="step-title">Satuan Terdeteksi Otomatis</div>
+        <div class="step-desc">Setelah file dimuat, aplikasi akan menampilkan semua satuan yang ditemukan di data (contoh: <span class="badge badge-blue">Dus</span> <span class="badge badge-blue">Rtg</span> <span class="badge badge-blue">DsK</span> <span class="badge badge-blue">Pcs</span>). Ini membantu Anda mengecek apakah semua satuan sudah dikenali.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">✕</div>
+      <div class="step-body">
+        <div class="step-title">Batal Upload</div>
+        <div class="step-desc">Klik tombol <span class="btn-mock outline" style="color:var(--red);border-color:var(--red)">✕ Batal</span> untuk menghapus file yang sudah diupload dan memulai dari awal. <strong>Data tidak tersimpan di server</strong> — file hanya ada di browser Anda saja.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-orange">
+      <span class="callout-icon">⚠️</span>
+      <div><strong>Perhatian:</strong> File yang diupload hanya diproses di browser Anda. Jika halaman di-refresh atau browser ditutup, file perlu diupload ulang. Namun <strong>aturan konversi akan tetap tersimpan</strong> di browser.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 3 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s3"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2>Langkah 2 — Pemetaan Kolom <span>(Wajib Diperiksa)</span></h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:16px">
+      Setelah file dimuat, aplikasi perlu tahu <em>kolom mana</em> yang berisi Nama Barang, Satuan, dan Kuantitas. Aplikasi akan mencoba menebak otomatis, tapi Anda perlu <strong>memastikan pemetaan sudah benar</strong>.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Keterangan</th>
+            <th>Wajib?</th>
+            <th>Contoh Nama Kolom di Excel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Nama Barang</strong></td>
+            <td>Kolom berisi nama produk</td>
+            <td><span class="badge badge-red">Wajib</span></td>
+            <td>Nama Barang, Item, Produk, Barang</td>
+          </tr>
+          <tr>
+            <td><strong>Satuan</strong></td>
+            <td>Kolom berisi kode satuan (Dus, Rtg, DsK, dst)</td>
+            <td><span class="badge badge-red">Wajib</span></td>
+            <td>Satuan, Unit, UOM, Ukuran</td>
+          </tr>
+          <tr>
+            <td><strong>Kuantitas</strong></td>
+            <td>Kolom berisi jumlah/angka kuantitas</td>
+            <td><span class="badge badge-red">Wajib</span></td>
+            <td>Kuantitas, Qty, Sum of Kuantitas, Jumlah</td>
+          </tr>
+          <tr>
+            <td><strong>Kode Barang</strong></td>
+            <td>Kode/SKU produk (untuk referensi)</td>
+            <td><span class="badge badge-blue">Opsional</span></td>
+            <td>Kode Barang, SKU, Kode, FG-</td>
+          </tr>
+          <tr>
+            <td><strong>Nilai / Harga</strong></td>
+            <td>Kolom nilai rupiah transaksi</td>
+            <td><span class="badge badge-blue">Opsional</span></td>
+            <td>Jumlah, Amount, Sum of Jumlah, Harga</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div>
+        <strong>Tip:</strong> Jika nama kolom di Excel Anda berbeda (misal "Sum of Kuantitas" bukan "Kuantitas"), aplikasi tetap bisa menebaknya. Namun pastikan dropdown sudah menunjukkan kolom yang tepat sebelum melanjutkan.
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div>
+        <strong>Semua kolom asli tetap disimpan:</strong> Kolom lain seperti Nama Pelanggan, Region, Tanggal, PIC, dll tidak perlu dipilih di sini — semuanya akan <em>otomatis ikut tersimpan</em> saat Anda download hasil.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 4 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s4"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2>Langkah 3 — Aturan Konversi <span>(Konfigurasi Produk)</span></h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:16px">
+      Aturan konversi menentukan <em>berapa satuan lain setara 1 Dus</em> untuk setiap jenis produk. Sudah tersedia aturan default, tapi Anda bisa menambah atau mengubah sesuai kebutuhan.
+    </p>
+
+    <div class="callout callout-purple">
+      <span class="callout-icon">💾</span>
+      <div><strong>Aturan tersimpan otomatis di browser.</strong> Setiap perubahan langsung disimpan — Anda tidak perlu klik "Simpan" secara manual. Aturan akan tetap ada meski browser ditutup dan dibuka kembali.</div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📋</div>
+      <div class="step-body">
+        <div class="step-title">Aturan Default yang Sudah Ada</div>
+        <div class="step-desc">Aplikasi sudah memiliki aturan untuk produk BMX, Heppi Twist, dan Grandchoco. Lihat tabel referensi di <a href="#s9" style="color:var(--green)">bagian 9</a> untuk rincian konversi setiap satuan.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🔑</div>
+      <div class="step-body">
+        <div class="step-title">Cara Kerja "Keyword"</div>
+        <div class="step-desc">
+          Setiap aturan memiliki <strong>keyword</strong> — kata kunci yang dicocokkan ke nama barang. Misalnya keyword <code>isi 80</code> akan mencocokkan semua produk yang namanya mengandung "isi 80" seperti "BMX Chocoball Isi 80 Pcs" atau "DO RE MI Heppi Twist Vanila Isi 80 Pcs".<br><br>
+          Jika produk punya beberapa keyword, pisahkan dengan koma: <code>isi 80, 80 pcs</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">➕</div>
+      <div class="step-body">
+        <div class="step-title">Tambah Aturan Baru</div>
+        <div class="step-desc">
+          Klik tombol <span class="btn-mock outline">+ Tambah Aturan Konversi</span> di bawah daftar aturan. Isi:
+          <ol style="margin-top:8px;margin-left:16px;font-size:13px">
+            <li><strong>Nama Aturan</strong> — deskripsi singkat untuk mudah dikenali</li>
+            <li><strong>Keyword</strong> — kata dari nama barang yang menjadi penanda</li>
+            <li><strong>Satuan dan jumlah per Dus</strong> — misal: Rtg = 8 per Dus, Pcs = 80 per Dus</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">↩️</div>
+      <div class="step-body">
+        <div class="step-title">Reset ke Default</div>
+        <div class="step-desc">Jika aturan tidak sengaja terhapus atau berubah, klik tombol <span class="btn-mock orange">↺ Default</span> di header kartu Aturan Konversi untuk mengembalikan ke aturan bawaan.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">💾</div>
+      <div class="step-body">
+        <div class="step-title">Ekspor & Impor Aturan</div>
+        <div class="step-desc">
+          Anda bisa menyimpan aturan ke file JSON untuk dibagikan ke rekan kerja atau digunakan di komputer lain:
+          <ul style="margin-top:8px;margin-left:16px;font-size:13px">
+            <li>Klik <span class="btn-mock outline">💾</span> untuk <strong>ekspor</strong> (download file aturan.json)</li>
+            <li>Klik <span class="btn-mock outline">📥</span> untuk <strong>impor</strong> (upload file aturan.json dari komputer)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-orange">
+      <span class="callout-icon">⚠️</span>
+      <div>
+        <strong>Penting — urutan pencocokan keyword:</strong> Aturan dicocokkan dari urutan atas ke bawah. Jika ada produk yang cocok di lebih dari satu aturan, aturan yang <em>paling atas</em> yang digunakan. Susun aturan dari yang paling spesifik di atas ke yang paling umum di bawah.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 5 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s5"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2>Langkah 4 — Proses & Lihat Hasil</h2>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🔄</div>
+      <div class="step-body">
+        <div class="step-title">Klik Tombol "Proses Konversi"</div>
+        <div class="step-desc">Setelah upload dan pemetaan kolom selesai, klik tombol hijau besar <span class="btn-mock green">🔄 Proses Konversi</span>. Proses biasanya selesai dalam hitungan detik.</div>
+      </div>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:13.5px;color:var(--text-muted);margin-bottom:12px;margin-top:14px">
+      Setelah proses selesai, panel kanan akan menampilkan <strong>4 angka ringkasan</strong>:
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Angka</th><th>Artinya</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Total Baris</strong></td><td>Jumlah total baris data di file Excel Anda</td></tr>
+          <tr><td><strong style="color:var(--green)">Berhasil</strong></td><td>Baris yang berhasil dikonversi ke Dus</td></tr>
+          <tr><td><strong style="color:var(--orange)">Perlu Cek</strong></td><td>Baris yang gagal dikonversi (perlu penanganan manual)</td></tr>
+          <tr><td><strong style="color:var(--blue)">Total Dus</strong></td><td>Jumlah total semua baris yang berhasil, dalam satuan Dus</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:13.5px;color:var(--text-muted);margin-bottom:12px;margin-top:16px">
+      Di kolom <strong>Status</strong> tabel, setiap baris akan menunjukkan salah satu dari tiga status:
+    </p>
+
+    <div class="status-legend">
+      <div class="status-row">
+        <span class="badge badge-green">✓ OK</span>
+        <span style="font-family:-apple-system,sans-serif;font-size:13px">Berhasil dikonversi. Kolom "Qty (Dus)" sudah terisi.</span>
+      </div>
+      <div class="status-row">
+        <span class="badge badge-orange">⚠ Tdk ada aturan</span>
+        <span style="font-family:-apple-system,sans-serif;font-size:13px">Nama barang tidak cocok dengan aturan mana pun. Tambah aturan baru.</span>
+      </div>
+      <div class="status-row">
+        <span class="badge badge-red">✕ Satuan tdk dikenal</span>
+        <span style="font-family:-apple-system,sans-serif;font-size:13px">Aturan ditemukan, tapi satuannya belum didaftarkan di aturan itu.</span>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div>
+        <strong>Cara memperbaiki baris "Perlu Cek":</strong> Klik tab <strong>⚠ Perlu Cek</strong> di panel kanan. Untuk setiap produk yang muncul, klik tombol <span class="btn-mock orange">+ Aturan</span> di sebelahnya — form tambah aturan akan terbuka dan otomatis terisi dengan nama produk tersebut sebagai keyword.
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🔄</div>
+      <div class="step-body">
+        <div class="step-title">Proses Ulang Setelah Perbaikan</div>
+        <div class="step-desc">Setelah menambah aturan baru, klik lagi tombol <span class="btn-mock green">🔄 Proses Konversi</span>. Baris yang tadinya gagal akan diproses ulang dengan aturan yang baru ditambahkan.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 6 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s6"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2>Filter & Analisis Data</h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:16px">
+      Panel hasil memiliki 4 tab untuk memandang data dari sudut yang berbeda:
+    </p>
+
+    <div class="mockup" style="margin-bottom:16px">
+      <div class="tabs-mock">
+        <div class="tab-mock on">📋 Data Detail</div>
+        <div class="tab-mock">📈 Grafik</div>
+        <div class="tab-mock">📦 Per Produk</div>
+        <div class="tab-mock">🔢 Pivot</div>
+        <div class="tab-mock">⚠ Perlu Cek (3)</div>
+      </div>
+      <div style="padding:12px;font-family:-apple-system,sans-serif;font-size:12px;color:var(--text-muted);text-align:center">← Klik tab untuk berpindah tampilan</div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📋</div>
+      <div class="step-body">
+        <div class="step-title">Tab Data Detail — Tabel Lengkap</div>
+        <div class="step-desc">
+          Menampilkan semua baris data dengan kolom konversi. Di tab ini tersedia:
+          <ul style="margin-top:8px;margin-left:16px;font-size:13px;line-height:2">
+            <li><strong>Kolom bisa diurutkan</strong> — klik judul kolom untuk sorting A-Z atau besar-kecil</li>
+            <li><strong>Kolom pencarian</strong> — ketik nama barang atau kode untuk mencari</li>
+            <li><strong>Filter Satuan</strong> — tampilkan hanya baris dengan satuan tertentu</li>
+            <li><strong>Filter per halaman</strong> — pilih 50, 100, 200, atau 500 baris per halaman</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🏷️</div>
+      <div class="step-body">
+        <div class="step-title">Filter Dinamis (Otomatis Terdeteksi)</div>
+        <div class="step-desc">
+          Aplikasi secara otomatis menemukan kolom kategorikal di data Anda (seperti Region, Brand, PIC, Bulan, RTM) dan menampilkannya sebagai tombol filter di bagian atas tabel. Klik salah satu untuk memfilter:
+          <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:7px;font-family:-apple-system,sans-serif;font-size:12px">
+            <div style="padding:4px 11px;border:1px solid #c5bfb4;border-radius:20px;color:#5a5550">Region: <strong>Semua</strong></div>
+            <div style="padding:4px 11px;border:1px solid var(--green);border-radius:20px;color:var(--green);background:var(--green-light);font-weight:600">Brand: <strong>BMX</strong></div>
+            <div style="padding:4px 11px;border:1px solid #c5bfb4;border-radius:20px;color:#5a5550">Bulan: <strong>Semua</strong></div>
+            <div style="padding:4px 11px;border:1px solid var(--red);border-radius:20px;color:var(--red);font-size:11px">✕ Reset filter</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">🔀</div>
+      <div class="step-body">
+        <div class="step-title">Toggle "Grouped" — Gabungkan per Produk</div>
+        <div class="step-desc">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div class="toggle-mock"><div class="track on"></div> <span>Grouped</span></div>
+          </div>
+          Aktifkan toggle <strong>Grouped</strong> untuk menggabungkan semua baris dari produk yang sama menjadi <em>satu baris total Dus</em>. Sangat berguna untuk melihat total penjualan per produk. Badge ungu <span class="badge badge-purple">12</span> menunjukkan berapa baris yang digabungkan.
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">↩️</div>
+      <div class="step-body">
+        <div class="step-title">Toggle "Retur" — Lihat Transaksi Negatif</div>
+        <div class="step-desc">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div class="toggle-mock"><div class="track on"></div> <span>Retur</span></div>
+          </div>
+          Aktifkan toggle <strong>Retur</strong> untuk menampilkan hanya baris dengan kuantitas negatif (retur/kembali barang). Angka negatif otomatis ditampilkan dengan warna <strong style="color:var(--red)">merah</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">⚙️</div>
+      <div class="step-body">
+        <div class="step-title">Tombol "⚙ Kolom" — Atur Kolom Tampilan</div>
+        <div class="step-desc">Klik tombol ini untuk memilih kolom mana yang ditampilkan di tabel: Kode Barang, Satuan Asli, Nilai/Jumlah Rupiah, Aturan yang Digunakan, dan Kolom Tambahan dari data asli.</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📈</div>
+      <div class="step-body">
+        <div class="step-title">Tab Grafik — Visualisasi</div>
+        <div class="step-desc">
+          Pilih jenis grafik:
+          <ul style="margin-top:8px;margin-left:16px;font-size:13px">
+            <li><strong>Bar — Total Dus per Produk:</strong> Batang horizontal, mudah dibandingkan antar produk</li>
+            <li><strong>Pie — Proporsi Dus:</strong> Bagian masing-masing produk dari total</li>
+            <li><strong>Bar — Distribusi Satuan:</strong> Berapa baris per jenis satuan (Dus, Rtg, DsK, dll)</li>
+          </ul>
+          Gunakan dropdown "Top 10/20/Semua" untuk membatasi jumlah produk yang ditampilkan.
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">📦</div>
+      <div class="step-body">
+        <div class="step-title">Tab Per Produk — Ringkasan &amp; Mini Bar</div>
+        <div class="step-desc">Menampilkan total Dus per produk dengan mini bar progress. Produk yang memiliki retur ditandai dengan badge <span class="badge badge-red">↩ 3 retur</span>. Bisa diurutkan berdasarkan total Dus atau nama, dan dicari menggunakan kolom pencarian.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 7 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s7"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2>Tab Pivot — Laporan Tabel Silang</h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:16px">
+      Pivot adalah fitur untuk membuat <strong>laporan tabel silang</strong> — misalnya Total Dus per Produk berdasarkan Region, atau per Brand berdasarkan Bulan. Berguna untuk analisis distribusi penjualan.
+    </p>
+
+    <div class="step-card">
+      <div class="step-icon">🔢</div>
+      <div class="step-body">
+        <div class="step-title">Cara Membuat Pivot</div>
+        <div class="step-desc">
+          <ol style="margin-left:16px;font-size:13px;line-height:2">
+            <li>Klik tab <strong>🔢 Pivot</strong></li>
+            <li>Pilih <strong>Dimensi Baris</strong> — misal: Nama Barang</li>
+            <li>Pilih <strong>Dimensi Kolom</strong> — misal: REGION (opsional)</li>
+            <li>Pilih <strong>Nilai</strong> — Total Dus, Qty Asli, atau Jumlah Baris</li>
+            <li>Tabel pivot langsung muncul otomatis</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon">✅</span>
+      <div>
+        <strong>Contoh hasil pivot:</strong> Dimensi Baris = Nama Barang, Dimensi Kolom = REGION → Anda mendapat tabel yang menunjukkan berapa Dus setiap produk terjual di setiap region. Baris terakhir menampilkan <strong>Grand Total</strong> otomatis.
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-icon">⬇️</div>
+      <div class="step-body">
+        <div class="step-title">Download Pivot</div>
+        <div class="step-desc">Klik tombol <span class="btn-mock outline">⬇ Download Pivot</span> untuk mengunduh tabel pivot ke file Excel tersendiri. Ini berguna untuk laporan atau dipresentasikan.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 8 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s8"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">8</div>
+      <h2>Download Hasil <span>(4 Sheet Excel)</span></h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:16px">
+      Klik tombol <span class="btn-mock green">⬇ Download Excel</span> di pojok kanan atas tabel. File akan tersimpan otomatis ke folder Downloads Anda dengan nama <em>namafile_konversi_dus.xlsx</em>.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Sheet</th>
+            <th>Isi</th>
+            <th>Kegunaan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>📋 Data Detail</strong></td>
+            <td>Semua kolom asli dari Excel + kolom Qty Dus, Status Konversi, Aturan Digunakan, dan Keterangan</td>
+            <td>Data lengkap untuk referensi baris per baris</td>
+          </tr>
+          <tr>
+            <td><strong>📦 Ringkasan per Produk</strong></td>
+            <td>Total Dus per produk, jumlah baris OK, jumlah baris retur</td>
+            <td>Laporan rekap cepat per nama barang</td>
+          </tr>
+          <tr>
+            <td><strong>🔢 Pivot × Dimensi</strong></td>
+            <td>Tabel silang Produk × Region (atau Brand) secara otomatis</td>
+            <td>Analisis distribusi penjualan lintas wilayah/brand</td>
+          </tr>
+          <tr>
+            <td><strong>⚙️ Aturan Konversi</strong></td>
+            <td>Daftar semua aturan yang digunakan: nama, keyword, satuan, rasio</td>
+            <td>Dokumentasi aturan sebagai referensi</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div>
+        <strong>Tip — Salin ke Clipboard:</strong> Klik tombol <span class="btn-mock outline">📋 Salin</span> untuk menyalin data yang sedang tampil di tabel (sesuai filter aktif) ke clipboard, lalu paste langsung ke Excel atau Google Sheets.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 9 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s9"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">9</div>
+      <h2>Referensi Satuan & Konversi</h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:16px">
+      Berikut aturan konversi bawaan yang sudah tersedia di aplikasi:
+    </p>
+
+    <div class="conv-box">
+      <div class="conv-title">Aturan 1 — Produk Isi 80 Pcs</div>
+      <div class="conv-product">BMX Chocoball, Es Dawet, Es Kopyor, Ring Keju, Snack Melon, Snack Strawberry, Snack Ubi Ungu, Snack Kari Ayam, DO RE MI Heppi Twist Mini Wafer Stick (Isi 80 Pcs)</div>
+      <div style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:10px">Keyword: <code style="background:#f0ede6;padding:2px 7px;border-radius:4px">isi 80</code></div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-green">1 Dus</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Sudah dalam satuan Dus</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">8 Rtg</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 8</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">8 DsK</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 8</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">80 Pcs</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 80</span>
+      </div>
+    </div>
+
+    <div class="conv-box">
+      <div class="conv-title">Aturan 2 — Produk Isi 40 Pcs</div>
+      <div class="conv-product">BMX Ring Keju Jumbo, BMX Snack Big Chocoball, BMX Snack Seaweed, BMX Snack Ubi Ungu Jumbo, BMX Snack Nettos, BMX Snack Rainbow (Isi 40 Pcs)</div>
+      <div style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:10px">Keyword: <code style="background:#f0ede6;padding:2px 7px;border-radius:4px">isi 40</code></div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-green">1 Dus</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Sudah dalam satuan Dus</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">4 Rtg</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 4</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">4 DsK</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 4</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">40 Pcs</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 40</span>
+      </div>
+    </div>
+
+    <div class="conv-box">
+      <div class="conv-title">Aturan 3 — Produk 6×24 Pcs</div>
+      <div class="conv-product">Grandchoco & Choco Chocolate, Grandchoco & Vanilla, Grandchoco Rasa Strawberry, Grandchoco Rasa Ubi Ungu, Grandchoco Rasa Es Teler (6×24 Pcs)</div>
+      <div style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--text-muted);margin-bottom:10px">Keyword: <code style="background:#f0ede6;padding:2px 7px;border-radius:4px">6x24</code></div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-green">1 Dus</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Sudah dalam satuan Dus</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">6 DsK</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 6</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">6 Duplex</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 6</span>
+      </div>
+      <div class="conv-row">
+        <span class="conv-from"><span class="badge badge-blue">144 Pcs</span></span>
+        <span class="conv-arrow">→</span>
+        <span class="conv-to">1 Dus</span>
+        <span class="conv-formula">Qty ÷ 144</span>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div>
+        <strong>Singkatan satuan yang dikenali:</strong> <span class="badge badge-blue">Rtg</span> = Renceng &nbsp; <span class="badge badge-blue">DsK</span> = Duplex/Karton &nbsp; <span class="badge badge-blue">Pcs</span> = Pieces &nbsp; <span class="badge badge-blue">Dus</span> = Dus (tidak dikonversi, tetap 1:1).
+        Pencocokan <em>tidak case-sensitive</em>: "dus", "DUS", "Dus" semua dianggap sama.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 10 -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s10"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <h2>Pertanyaan Umum (FAQ)</h2>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Apakah data saya aman? Apakah dikirim ke internet?</div>
+      <div class="faq-a">Tidak. Semua proses terjadi di browser komputer Anda. Data tidak dikirim ke server mana pun. Aplikasi ini bisa digunakan bahkan tanpa koneksi internet (mode offline), asalkan file HTML-nya sudah dibuka sebelumnya.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Ada produk yang statusnya "⚠ Tidak ada aturan" meskipun sudah ada aturannya. Kenapa?</div>
+      <div class="faq-a">Kemungkinan keyword tidak cocok. Pastikan keyword di aturan <em>ada di dalam</em> nama barang di data. Contoh: keyword "isi 80" harus muncul sebagai bagian dari nama barang seperti "BMX Chocoball <strong>Isi 80</strong> Pcs". Pencocokan tidak case-sensitive tapi harus persis. Cek juga apakah ada spasi ekstra atau typo.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Aturan yang saya tambahkan tiba-tiba hilang. Kenapa?</div>
+      <div class="faq-a">Aturan disimpan di localStorage browser. Jika Anda menggunakan mode incognito/private, membersihkan data browser, atau menggunakan browser berbeda, aturan akan hilang. Solusinya: gunakan tombol <strong>💾 Ekspor</strong> untuk menyimpan aturan ke file JSON, lalu <strong>📥 Impor</strong> saat dibutuhkan.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Bisa tidak digunakan di HP/smartphone?</div>
+      <div class="faq-a">Bisa, tampilan akan menyesuaikan layar (responsive). Namun pengalaman terbaik adalah di komputer dengan layar lebar karena tabel dan panel sidebar lebih mudah dilihat.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">File saya berukuran besar (ribuan baris). Apakah bisa diproses?</div>
+      <div class="faq-a">Bisa. Aplikasi diuji untuk file dengan ribuan baris. Proses konversi dilakukan di background sehingga browser tidak membeku. Tabel hasil menampilkan maksimal 50 baris per halaman secara default (bisa diubah ke 500), namun download Excel akan mengandung semua data.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Kenapa ada baris negatif (angka merah) di hasil?</div>
+      <div class="faq-a">Angka negatif adalah transaksi retur (barang kembali). Ini normal dan sengaja ditampilkan merah agar mudah diidentifikasi. Gunakan toggle <strong>Retur</strong> untuk menampilkan hanya transaksi retur, atau abaikan jika tidak relevan.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Satuan yang ada di data saya tidak ada di aturan default. Apa yang harus dilakukan?</div>
+      <div class="faq-a">Tambahkan baris satuan baru di aturan yang sudah ada, atau buat aturan baru. Misalnya jika ada satuan "Karton" yang setara DsK (6 per Dus untuk produk 6x24), tambahkan baris: Satuan = "Karton", Per Dus = 6 di aturan Grandchoco.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Apakah aplikasi ini bisa digunakan untuk produk selain BMX dan Grandchoco?</div>
+      <div class="faq-a">Ya. Tambahkan aturan baru dengan keyword dari nama produk Anda dan masukkan rasio konversi yang sesuai. Tidak ada batasan jumlah aturan yang bisa ditambahkan.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 11 — WALKTHROUGH VISUAL -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s11"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <h2>Panduan Visual — Walkthrough Lengkap</h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:20px">
+      Ikuti langkah-langkah di bawah ini secara berurutan dari awal hingga mendapatkan file hasil konversi. Setiap langkah dilengkapi penjelasan apa yang harus dilihat dan dilakukan.
+    </p>
+
+    <div class="walkthrough">
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Buka file aplikasi di browser</div>
+          <div class="wk-desc">
+            Cari file <strong>konversi-satuan-dus.html</strong> di komputer Anda (biasanya di folder Downloads). Klik dua kali untuk membukanya di browser. Anda akan melihat tampilan dengan header hijau bertuliskan <em>"Konversi Satuan → Dus"</em> dan dua panel: panel kiri (pengaturan) dan panel kanan (hasil).
+            <br><br>
+            Tidak perlu koneksi internet. Tidak perlu install apapun.
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Halaman terbuka dengan area upload di panel kiri dan area kosong bertuliskan "Upload file Excel" di panel kanan.</div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Upload file Excel data penjualan</div>
+          <div class="wk-desc">
+            Di panel kiri, klik area bertekstur garis putus-putus bertuliskan <strong>"Klik atau drag & drop file Excel"</strong>. Cari dan pilih file Excel Anda (misal: CLOSING_FIX.xlsx). Tunggu beberapa detik.
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Bar hijau muncul di bawah area upload menampilkan nama file dan ukuran. Dropdown "Pilih Sheet" dan label "Satuan Terdeteksi" muncul otomatis.</div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Pilih sheet yang benar</div>
+          <div class="wk-desc">
+            Jika muncul dropdown "Sheet", pilih sheet yang berisi data penjualan. Biasanya bernama <strong>Sheet1</strong> atau sesuai nama bulan/periode. Di bawah dropdown akan tertera jumlah baris dan kolom yang ditemukan (misal: "2.695 baris · 19 kolom").
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Informasi jumlah baris muncul, dan satuan-satuan yang terdeteksi tampil sebagai chip biru seperti <span class="badge badge-blue">Dus</span> <span class="badge badge-blue">Rtg</span> <span class="badge badge-blue">DsK</span></div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Periksa pemetaan kolom</div>
+          <div class="wk-desc">
+            Kartu <strong>"🗂️ Pemetaan Kolom"</strong> muncul di bawah upload. Periksa bahwa setiap dropdown menunjukkan kolom yang benar:
+            <ul style="margin:8px 0 0 18px;font-size:13px;line-height:2">
+              <li><strong>Nama Barang</strong> → kolom berisi nama produk (misal: "Nama Barang")</li>
+              <li><strong>Satuan</strong> → kolom berisi kode satuan (misal: "Satuan")</li>
+              <li><strong>Kuantitas</strong> → kolom berisi angka jumlah (misal: "Sum of Kuantitas")</li>
+            </ul>
+            Jika ada yang salah, klik dropdown tersebut dan pilih kolom yang tepat.
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Ketiga dropdown wajib sudah menunjukkan kolom yang benar. Tombol "🔄 Proses Konversi" sudah aktif (tidak abu-abu).</div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Cek aturan konversi (opsional tapi disarankan)</div>
+          <div class="wk-desc">
+            Gulir ke bawah ke kartu <strong>"⚙️ Aturan Konversi"</strong>. Pastikan aturan untuk produk Anda sudah ada. Untuk data BMX/Grandchoco, aturan default sudah cukup. Jika ada produk lain, tambahkan aturan sekarang sebelum memproses.
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Minimal 3-4 blok aturan sudah tersedia dengan keyword dan rasio konversi masing-masing.</div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Klik "🔄 Proses Konversi"</div>
+          <div class="wk-desc">
+            Klik tombol hijau besar <strong>"🔄 Proses Konversi"</strong> di bagian bawah panel kiri. Tunggu sebentar (proses biasanya kurang dari 3 detik untuk ribuan baris).
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Notifikasi hijau muncul di pojok bawah kanan (misal: "Selesai! 2.680/2.695 baris berhasil"). Panel kanan menampilkan 4 angka statistik dan tabel hasil.</div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Periksa tab "⚠ Perlu Cek"</div>
+          <div class="wk-desc">
+            Klik tab <strong>"⚠ Perlu Cek"</strong> di panel kanan. Jika ada angka di dalam tanda kurung (misal "⚠ Perlu Cek (15)"), artinya ada baris yang gagal dikonversi. Untuk setiap produk yang muncul, klik tombol <span class="btn-mock orange" style="font-size:11px;padding:3px 8px">+ Aturan</span> dan isi form aturannya.
+            <br><br>
+            Jika tab menunjukkan "Perlu Cek (0)" atau muncul pesan "Sempurna! Semua baris berhasil", lanjut ke langkah berikutnya.
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Setelah menambah aturan dan memproses ulang, angka di tab "Perlu Cek" berkurang atau menjadi 0.</div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Analisis hasil di berbagai tab (opsional)</div>
+          <div class="wk-desc">
+            Eksplorasi hasil sebelum mendownload:
+            <ul style="margin:8px 0 0 18px;font-size:13px;line-height:2">
+              <li>Tab <strong>📈 Grafik</strong> — lihat visualisasi total Dus per produk</li>
+              <li>Tab <strong>📦 Per Produk</strong> — rekap total Dus per nama barang</li>
+              <li>Tab <strong>🔢 Pivot</strong> — buat tabel silang Produk × Region</li>
+              <li>Filter chip di atas tabel — filter berdasarkan Region, Brand, atau Bulan</li>
+            </ul>
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Grafik batang horizontal menampilkan produk dengan total Dus terbesar di urutan teratas.</div>
+        </div>
+      </div>
+
+      <div class="wk-step">
+        <div class="wk-num"></div>
+        <div class="wk-content">
+          <div class="wk-title">Download hasil Excel</div>
+          <div class="wk-desc">
+            Klik tombol <span class="btn-mock green">⬇ Download Excel</span> di pojok kanan atas tabel. File Excel dengan 4 sheet akan tersimpan otomatis ke folder Downloads Anda.
+          </div>
+          <div class="wk-result">✅ Yang terlihat: Notifikasi "File Excel (4 sheet) berhasil didownload!" muncul. File bernama <em>namafile_konversi_dus.xlsx</em> muncul di folder Downloads.</div>
+        </div>
+      </div>
+
+    </div><!-- /walkthrough -->
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 12 — CONTOH KASUS NYATA -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s12"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">12</div>
+      <h2>Contoh Kasus Nyata</h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:20px">
+      Berikut beberapa contoh skenario nyata beserta cara penanganannya di aplikasi.
+    </p>
+
+    <!-- KASUS 1 -->
+    <div class="case-box">
+      <div class="case-header">
+        <span class="case-icon">📦</span>
+        <div>
+          <div class="case-title">Kasus 1 — Data Penjualan Campuran Satuan</div>
+          <div class="case-subtitle">Satu produk muncul dengan 3 satuan berbeda: Dus, Rtg, dan Pcs</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <div class="case-section">Data Asli di Excel</div>
+        <div class="data-row header">
+          <span>Nama Barang</span><span>Satuan</span><span>Qty</span><span>Qty (Dus)</span>
+        </div>
+        <div class="data-row">
+          <span>BMX Chocoball Isi 80 Pcs</span>
+          <span><span class="badge badge-blue">Dus</span></span>
+          <span>50</span>
+          <span class="qty-dus">50,0000 <span class="status-ok">✓</span></span>
+        </div>
+        <div class="data-row">
+          <span>BMX Chocoball Isi 80 Pcs</span>
+          <span><span class="badge badge-blue">Rtg</span></span>
+          <span>24</span>
+          <span class="qty-dus">3,0000 <span class="status-ok">✓</span></span>
+        </div>
+        <div class="data-row">
+          <span>BMX Chocoball Isi 80 Pcs</span>
+          <span><span class="badge badge-blue">Pcs</span></span>
+          <span>160</span>
+          <span class="qty-dus">2,0000 <span class="status-ok">✓</span></span>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:var(--green-light);border-radius:var(--radius-sm);font-family:-apple-system,sans-serif;font-size:13px;color:#1a4a2e">
+          <strong>Cara baca:</strong> 50 Dus + (24 Rtg ÷ 8) + (160 Pcs ÷ 80) = 50 + 3 + 2 = <strong>55 Dus total</strong>.<br>
+          Gunakan toggle <strong>Grouped</strong> untuk melihat total langsung sebagai 1 baris: "BMX Chocoball Isi 80 Pcs → 55,0000 Dus".
+        </div>
+      </div>
+    </div>
+
+    <!-- KASUS 2 -->
+    <div class="case-box">
+      <div class="case-header">
+        <span class="case-icon">↩️</span>
+        <div>
+          <div class="case-title">Kasus 2 — Ada Transaksi Retur (Nilai Negatif)</div>
+          <div class="case-subtitle">Sebagian baris memiliki kuantitas minus karena barang dikembalikan</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <div class="case-section">Data Asli di Excel</div>
+        <div class="data-row header">
+          <span>Nama Barang</span><span>Satuan</span><span>Qty</span><span>Qty (Dus)</span>
+        </div>
+        <div class="data-row">
+          <span>Grandchoco Chocolate 6x24 Pcs</span>
+          <span><span class="badge badge-blue">Dus</span></span>
+          <span>30</span>
+          <span class="qty-dus">30,0000 <span class="status-ok">✓</span></span>
+        </div>
+        <div class="data-row" style="background:var(--red-light)">
+          <span>Grandchoco Chocolate 6x24 Pcs</span>
+          <span><span class="badge badge-blue">Dus</span></span>
+          <span style="color:var(--red);font-weight:700">−5</span>
+          <span style="color:var(--red);font-weight:700">−5,0000 ↩</span>
+        </div>
+        <div class="data-row">
+          <span>Grandchoco Chocolate 6x24 Pcs</span>
+          <span><span class="badge badge-blue">DsK</span></span>
+          <span>12</span>
+          <span class="qty-dus">2,0000 <span class="status-ok">✓</span></span>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:var(--orange-light);border-radius:var(--radius-sm);font-family:-apple-system,sans-serif;font-size:13px;color:#5c3006">
+          <strong>Cara baca:</strong> Baris ke-2 adalah retur 5 Dus. Total bersih = 30 + (−5) + 2 = <strong>27 Dus</strong>.<br>
+          Aktifkan toggle <strong>Retur</strong> untuk melihat hanya transaksi minus. Aktifkan <strong>Grouped</strong> untuk langsung mendapat angka 27 Dus.
+        </div>
+      </div>
+    </div>
+
+    <!-- KASUS 3 -->
+    <div class="case-box">
+      <div class="case-header">
+        <span class="case-icon">⚠️</span>
+        <div>
+          <div class="case-title">Kasus 3 — Produk Baru Tidak Dikenali</div>
+          <div class="case-subtitle">Muncul produk dengan nama berbeda yang belum ada aturannya</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <div class="case-section">Kondisi Awal</div>
+        <div class="data-row header">
+          <span>Nama Barang</span><span>Satuan</span><span>Qty</span><span>Status</span>
+        </div>
+        <div class="data-row" style="background:var(--orange-light)">
+          <span>BMX Snack Jagung Bakar Isi 40 Pcs</span>
+          <span><span class="badge badge-blue">Rtg</span></span>
+          <span>16</span>
+          <span class="status-err">⚠ Tdk ada aturan</span>
+        </div>
+
+        <div style="margin-top:14px;margin-bottom:10px" class="case-section">Cara Memperbaiki</div>
+        <div class="walkthrough" style="margin-left:0">
+          <div class="wk-step" style="margin-bottom:12px">
+            <div class="wk-num" style="width:28px;height:28px;font-size:12px;box-shadow:0 0 0 1.5px var(--green)"></div>
+            <div class="wk-content" style="padding:10px 14px">
+              <div class="wk-title" style="font-size:13px">Klik tab "⚠ Perlu Cek" di panel kanan</div>
+              <div class="wk-desc" style="font-size:12.5px">Nama produk "BMX Snack Jagung Bakar Isi 40 Pcs" akan muncul di daftar.</div>
+            </div>
+          </div>
+          <div class="wk-step" style="margin-bottom:12px">
+            <div class="wk-num" style="width:28px;height:28px;font-size:12px;box-shadow:0 0 0 1.5px var(--green)"></div>
+            <div class="wk-content" style="padding:10px 14px">
+              <div class="wk-title" style="font-size:13px">Klik tombol "+ Aturan" di sebelah nama produk tersebut</div>
+              <div class="wk-desc" style="font-size:12.5px">Form tambah aturan terbuka. Nama aturan dan keyword otomatis terisi dari nama produk.</div>
+            </div>
+          </div>
+          <div class="wk-step" style="margin-bottom:12px">
+            <div class="wk-num" style="width:28px;height:28px;font-size:12px;box-shadow:0 0 0 1.5px var(--green)"></div>
+            <div class="wk-content" style="padding:10px 14px">
+              <div class="wk-title" style="font-size:13px">Ubah keyword menjadi "isi 40" dan sesuaikan rasio</div>
+              <div class="wk-desc" style="font-size:12.5px">Karena ini produk isi 40 pcs: Rtg = 4 per Dus, Pcs = 40 per Dus. Klik Simpan Aturan.</div>
+            </div>
+          </div>
+          <div class="wk-step" style="margin-bottom:0">
+            <div class="wk-num" style="width:28px;height:28px;font-size:12px;box-shadow:0 0 0 1.5px var(--green)"></div>
+            <div class="wk-content" style="padding:10px 14px">
+              <div class="wk-title" style="font-size:13px">Klik "🔄 Proses Konversi" kembali</div>
+              <div class="wk-desc" style="font-size:12.5px">16 Rtg ÷ 4 = <strong>4 Dus</strong>. Status berubah jadi ✓ OK.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KASUS 4 -->
+    <div class="case-box">
+      <div class="case-header">
+        <span class="case-icon">🗺️</span>
+        <div>
+          <div class="case-title">Kasus 4 — Laporan Penjualan per Region</div>
+          <div class="case-subtitle">Ingin tahu berapa Dus yang terjual di setiap wilayah/region</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <div style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:14px">
+          Setelah konversi selesai, ada dua cara untuk melihat ini:
+        </div>
+
+        <div class="case-section">Cara A — Gunakan Filter Chip</div>
+        <div style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:12px">
+          Di atas tabel, klik chip filter REGION → pilih wilayah yang ingin dilihat. Lalu aktifkan toggle <strong>Grouped</strong> untuk melihat total per produk di region tersebut.
+        </div>
+
+        <div class="case-section">Cara B — Gunakan Tab Pivot</div>
+        <div style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--text-muted);margin-bottom:12px">
+          Klik tab <strong>🔢 Pivot</strong> → pilih Dimensi Baris: "Nama Barang" → Dimensi Kolom: "REGION" → Nilai: "Total Dus". Hasilnya adalah tabel yang menampilkan semua produk vs semua region sekaligus, dengan Grand Total di baris paling bawah.
+        </div>
+
+        <div style="padding:10px 12px;background:var(--green-light);border-radius:var(--radius-sm);font-family:-apple-system,sans-serif;font-size:13px;color:#1a4a2e">
+          <strong>💡 Tips:</strong> Klik tombol <span class="btn-mock outline" style="font-size:11px;padding:3px 9px">⬇ Download Pivot</span> untuk menyimpan tabel silang ini ke Excel secara terpisah — berguna untuk presentasi atau laporan bulanan.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 13 — TIPS & TRIK -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s13"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">13</div>
+      <h2>Tips & Trik Pengguna Mahir</h2>
+    </div>
+
+    <div class="tip-grid">
+      <div class="tip-card">
+        <span class="tip-card-icon">⚡</span>
+        <div class="tip-card-title">Keyword yang lebih spesifik = lebih akurat</div>
+        <div class="tip-card-desc">Gunakan keyword yang unik dan tidak muncul di nama produk lain. Misalnya "isi 80 pcs" lebih spesifik daripada hanya "80". Pisahkan dengan koma jika ada variasi penulisan: <code>isi 80, 80 pcs</code></div>
+      </div>
+
+      <div class="tip-card">
+        <span class="tip-card-icon">📤</span>
+        <div class="tip-card-title">Backup aturan sebelum ganti file Excel</div>
+        <div class="tip-card-desc">Klik 💾 Ekspor setiap selesai mengatur aturan. Simpan file <em>aturan_konversi_dus.json</em> di folder yang aman. Jika pindah komputer atau bersihkan cache browser, impor kembali dengan 📥 Impor.</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="tip-card-icon">🔍</span>
+        <div class="tip-card-title">Hover pada kolom Qty (Dus) untuk detail</div>
+        <div class="tip-card-desc">Arahkan kursor ke angka di kolom <strong>Qty (Dus)</strong>. Akan muncul tooltip yang menjelaskan perhitungan lengkap, misal: "16 Rtg ÷ 4 = 4,0000 Dus [aturan: Produk Isi 40 Pcs]"</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="tip-card-icon">📋</span>
+        <div class="tip-card-title">Salin ke Google Sheets tanpa download</div>
+        <div class="tip-card-desc">Klik 📋 Salin, buka Google Sheets, lalu tekan <kbd>Ctrl</kbd>+<kbd>V</kbd>. Data tabel (sesuai filter aktif) langsung terpaste rapi dalam format tab-separated yang Sheets kenali sebagai kolom.</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="tip-card-icon">🎯</span>
+        <div class="tip-card-title">Filter + Grouped untuk rekap cepat</div>
+        <div class="tip-card-desc">Klik filter chip Region → pilih satu wilayah → aktifkan toggle Grouped. Hasilnya: total Dus per produk khusus untuk wilayah itu. Cocok untuk laporan per area sales.</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="tip-card-icon">🔄</span>
+        <div class="tip-card-title">Proses ulang tidak reset aturan</div>
+        <div class="tip-card-desc">Anda bisa klik "🔄 Proses Konversi" berkali-kali tanpa takut aturan hilang atau data rusak. Setiap klik memproses ulang seluruh data dengan aturan terkini.</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="tip-card-icon">📊</span>
+        <div class="tip-card-title">Ubah grafik menjadi "Top 20" untuk file besar</div>
+        <div class="tip-card-desc">Jika produk sangat banyak, grafik bisa terlihat sesak. Ubah dropdown dari "Top 10" ke "Top 20" — atau gunakan tab "Per Produk" dengan fungsi pencarian yang lebih fleksibel.</div>
+      </div>
+
+      <div class="tip-card">
+        <span class="tip-card-icon">🖨️</span>
+        <div class="tip-card-title">Cetak panduan ini sebagai referensi</div>
+        <div class="tip-card-desc">Tekan <kbd>Ctrl</kbd>+<kbd>P</kbd> (atau <kbd>Cmd</kbd>+<kbd>P</kbd> di Mac) untuk mencetak panduan ini. Layout dioptimalkan untuk cetak — navigasi sticky tidak akan tercetak.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon">💡</span>
+      <div>
+        <strong>Scoping keyword untuk produk yang namanya mirip:</strong> Jika ada "BMX Chocoball Isi 80 Pcs" dan "BMX Big Chocoball Isi 40 Pcs", pastikan keyword cukup spesifik. Gunakan <code>chocoball isi 80</code> dan <code>big chocoball isi 40</code> — bukan hanya <code>chocoball</code> yang akan mencocokkan keduanya ke aturan pertama.
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 14 — TROUBLESHOOTING -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s14"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">14</div>
+      <h2>Panduan Mengatasi Masalah</h2>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">File Excel tidak bisa diupload / tidak muncul apa-apa setelah dipilih</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> Format file tidak didukung, file rusak, atau ukuran file terlalu besar untuk browser.</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Pastikan file berekstensi <code>.xlsx</code>, <code>.xls</code>, atau <code>.csv</code>. File <code>.xlsm</code> (dengan macro) mungkin bermasalah — simpan ulang sebagai .xlsx dulu.</li>
+          <li>Coba buka file di Excel terlebih dahulu untuk memastikan tidak rusak.</li>
+          <li>Untuk file sangat besar (&gt;50 MB), coba filter/kurangi data di Excel dulu sebelum upload.</li>
+          <li>Coba browser berbeda (Chrome atau Edge disarankan).</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">Dropdown pemetaan kolom tidak mendeteksi kolom yang benar</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> Nama kolom di Excel tidak mengandung kata kunci yang dikenali (misal: "Qty" padahal aplikasi menebak dari kata "Kuantitas").</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Klik dropdown yang salah dan pilih kolom yang tepat secara manual.</li>
+          <li>Alternatif: ubah nama kolom di Excel agar lebih standar (misal: "Qty" → "Kuantitas"), lalu upload ulang.</li>
+          <li>Tidak perlu mengubah nama kolom — cukup pilih manual dari dropdown, aplikasi akan mengingat pilihan Anda.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">Semua atau banyak baris statusnya "⚠ Tidak ada aturan" meski aturan sudah diisi</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> Keyword tidak cocok dengan isi kolom Nama Barang, atau kolom Nama Barang salah dipetakan.</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Klik 👁 <strong>Preview</strong> dan lihat isi kolom Nama Barang — pastikan mengandung teks yang sama dengan keyword Anda.</li>
+          <li>Pastikan kolom <strong>Nama Barang</strong> sudah dipetakan ke kolom yang benar (bukan ke kolom kode barang atau region).</li>
+          <li>Cek keyword: jika nama barang di data adalah "BMX Chocoball Isi 80 Pcs", keyword "isi 80" akan cocok. Tapi keyword "Isi80" (tanpa spasi) tidak akan cocok.</li>
+          <li>Coba keyword yang lebih pendek dan pasti ada di nama barang, misal hanya "chocoball" atau "grandchoco".</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">Status "✕ Satuan tidak dikenal" meski aturan untuk produk itu sudah ada</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> Satuan di data (misal "RTG" huruf kapital semua) tidak sama persis dengan satuan di aturan (misal "Rtg").</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Pencocokan satuan <em>tidak</em> case-sensitive — "RTG", "rtg", "Rtg" seharusnya semua cocok. Jika masih gagal, cek apakah ada spasi tersembunyi (misal "Rtg " dengan spasi di akhir).</li>
+          <li>Klik Preview dan lihat isi kolom Satuan untuk mengetahui nilai pastinya.</li>
+          <li>Di aturan konversi, tambahkan baris satuan baru dengan nilai persis seperti yang ada di data (salin-paste jika perlu).</li>
+          <li>Lihat chip satuan terdeteksi (di bawah area upload) — pastikan semua satuan yang ada di sana sudah didaftarkan di aturan yang sesuai.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">Hasil konversi tampak salah — angka Dus terlalu besar atau terlalu kecil</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> Nilai "Per Dus" di aturan terbalik (misal diisi 80 padahal seharusnya 8).</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Hover ke angka di kolom Qty (Dus) untuk melihat detail perhitungan: misal "16 Rtg ÷ <strong>8</strong> = 2 Dus". Cek apakah pembagi sudah benar.</li>
+          <li>Rumus yang digunakan: <strong>Qty (Dus) = Qty Asli ÷ Nilai Per Dus</strong>. Jika 1 Dus = 8 Rtg, maka nilai Per Dus untuk satuan Rtg adalah 8.</li>
+          <li>Perbaiki nilai Per Dus di aturan → klik "🔄 Proses Konversi" ulang.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">Tombol "Download Excel" tidak berfungsi / tidak ada file yang tersimpan</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> Popup download diblokir browser, atau belum ada data hasil konversi.</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Pastikan sudah klik "🔄 Proses Konversi" terlebih dahulu — tombol Download baru aktif setelah ada hasil.</li>
+          <li>Cek apakah browser memblokir download. Lihat pojok kanan atas browser — biasanya ada ikon atau notifikasi "Download diblokir". Izinkan download dari aplikasi ini.</li>
+          <li>Cek folder Downloads di komputer Anda — file mungkin sudah tersimpan tanpa notifikasi.</li>
+          <li>Coba browser Chrome atau Edge yang paling kompatibel.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">Filter dinamis (chip Region/Brand/dll) tidak muncul setelah proses</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> Kolom kategorikal di data memiliki terlalu banyak nilai unik (&gt;80), atau kolom tersebut dikenali sebagai kolom numerik.</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Filter otomatis hanya muncul untuk kolom dengan maksimal 80 nilai unik. Jika kolom Region misalnya memiliki 100+ nilai berbeda (karena nama yang tidak konsisten), filter tidak muncul.</li>
+          <li>Bersihkan data di Excel dulu: standarisasi nama region/brand yang tidak konsisten (misal: "Jawa Barat" vs "jabar" vs "JABAR" → pilih satu format).</li>
+          <li>Sebagai alternatif, gunakan kolom pencarian di tabel untuk mencari secara manual.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="trouble-item">
+      <div class="trouble-problem">
+        <span class="trouble-problem-icon">❌</span>
+        <div class="trouble-problem-text">Halaman terasa lambat atau browser tidak merespons saat memproses</div>
+      </div>
+      <div class="trouble-cause">
+        <span>🔎</span>
+        <span><strong>Kemungkinan penyebab:</strong> File Excel memiliki banyak baris (lebih dari 50.000 baris) sehingga membutuhkan waktu lebih lama.</span>
+      </div>
+      <div class="trouble-solution">
+        <strong>Solusi:</strong>
+        <ol>
+          <li>Tunggu beberapa saat — proses berjalan di background. Browser mungkin menampilkan pesan "halaman tidak merespons" — klik "Tunggu" (bukan "Keluar").</li>
+          <li>Untuk file sangat besar, bagi menjadi beberapa file per bulan atau per wilayah, proses secara terpisah, lalu gabungkan di Excel.</li>
+          <li>Tutup tab browser lain yang tidak diperlukan untuk membebaskan memori.</li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECTION 15 — GLOSARIUM -->
+  <!-- ══════════════════════════════════════ -->
+  <a class="section-anchor" id="s15"></a>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">15</div>
+      <h2>Glosarium Istilah</h2>
+    </div>
+
+    <p style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:18px">
+      Daftar istilah teknis yang digunakan di aplikasi dan panduan ini:
+    </p>
+
+    <div class="glossary-grid">
+      <div class="gloss-item">
+        <span class="gloss-term">Dus</span>
+        <div class="gloss-def">Satuan tujuan konversi. Satu Dus adalah satu kardus/karton besar yang berisi produk lengkap sesuai standar pabrik.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Rtg / Renceng</span>
+        <div class="gloss-def">Satuan berupa strip/renceng produk. Satu renceng biasanya berisi 10 Pcs, dan beberapa renceng membentuk 1 Dus.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">DsK / Duplex</span>
+        <div class="gloss-def">Satuan karton kecil/duplex yang merupakan pembungkus lebih kecil dari Dus. Beberapa DsK membentuk 1 Dus.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Pcs</span>
+        <div class="gloss-def">Satuan satuan terkecil — piece atau butir produk individual. Dikonversi ke Dus dengan membagi jumlah Pcs per Dus.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Keyword</span>
+        <div class="gloss-def">Kata kunci yang digunakan untuk mencocokkan nama barang ke aturan konversi. Satu aturan bisa memiliki banyak keyword dipisah koma.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Aturan Konversi</span>
+        <div class="gloss-def">Konfigurasi yang mendefinisikan: untuk produk dengan keyword tertentu, berapa satuan X setara 1 Dus. Disimpan di browser secara lokal.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Pemetaan Kolom</span>
+        <div class="gloss-def">Proses menunjukkan ke aplikasi kolom mana di Excel yang berisi Nama Barang, Satuan, dan Kuantitas.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Status OK</span>
+        <div class="gloss-def">Baris berhasil dikonversi: aturan ditemukan dan satuan dikenali. Kolom Qty (Dus) sudah terisi dengan nilai.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Status Perlu Cek</span>
+        <div class="gloss-def">Baris gagal dikonversi. Bisa karena tidak ada aturan yang cocok, atau satuan tidak terdaftar di aturan yang cocok.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Mode Grouped</span>
+        <div class="gloss-def">Tampilan di mana semua baris dengan nama produk yang sama digabungkan menjadi satu baris, dengan total Qty Dus dijumlahkan.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Retur</span>
+        <div class="gloss-def">Transaksi dengan kuantitas negatif, menandakan barang dikembalikan dari pelanggan ke gudang. Ditampilkan merah di tabel.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Pivot</span>
+        <div class="gloss-def">Tabel silang yang merangkum data berdasarkan dua dimensi sekaligus — misal Produk (baris) × Region (kolom) = Total Dus.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Filter Dinamis</span>
+        <div class="gloss-def">Chip filter yang muncul otomatis berdasarkan kolom kategorikal di data Anda (Region, Brand, Bulan, PIC, dll).</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">localStorage</span>
+        <div class="gloss-def">Mekanisme penyimpanan bawaan browser yang digunakan untuk menyimpan aturan konversi. Data tidak dikirim ke internet — tersimpan hanya di komputer Anda.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Per Dus</span>
+        <div class="gloss-def">Nilai di aturan konversi yang menunjukkan berapa unit satuan X dibutuhkan untuk membentuk 1 Dus. Rumus: Qty Dus = Qty Asli ÷ Per Dus.</div>
+      </div>
+      <div class="gloss-item">
+        <span class="gloss-term">Sheet</span>
+        <div class="gloss-def">Lembar kerja di dalam satu file Excel. Satu file bisa memiliki beberapa sheet — aplikasi meminta Anda memilih sheet mana yang berisi data penjualan.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:20px">
+      <span class="callout-icon">✅</span>
+      <div>
+        <strong>Rumus Dasar Konversi:</strong><br>
+        <code style="font-size:14px;display:block;margin-top:6px;padding:8px 12px;background:#d8eee3;border-radius:5px">
+          Qty (Dus) = Qty Asli ÷ Jumlah [satuan] per Dus
+        </code>
+        <div style="margin-top:8px">
+          Contoh: 24 Rtg ÷ 8 Rtg/Dus = <strong>3 Dus</strong><br>
+          Contoh: 160 Pcs ÷ 80 Pcs/Dus = <strong>2 Dus</strong><br>
+          Contoh: 12 DsK ÷ 6 DsK/Dus = <strong>2 Dus</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- STICKY NAV -->
+<div class="sticky-nav">
+  <a class="sticky-btn" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Ke Atas</a>
+  <a class="sticky-btn secondary" href="#s11">📋 Walkthrough</a>
+  <a class="sticky-btn secondary" href="#s14">🔧 Troubleshoot</a>
+</div>
+
+<footer>
+  <div style="font-size:26px;margin-bottom:10px">⚖️</div>
+  <div style="font-size:15px;font-weight:700;color:var(--text)">Aplikasi Konversi Satuan → Dus</div>
+  <div style="margin-top:6px;font-size:13px">100% offline &nbsp;·&nbsp; Data tersimpan lokal di browser &nbsp;·&nbsp; Tidak memerlukan login atau internet</div>
+  <div style="margin-top:16px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap;font-size:12.5px">
+    <a href="#s1" style="color:var(--green);text-decoration:none">Gambaran Umum</a>
+    <a href="#s4" style="color:var(--green);text-decoration:none">Aturan Konversi</a>
+    <a href="#s9" style="color:var(--green);text-decoration:none">Referensi Satuan</a>
+    <a href="#s10" style="color:var(--green);text-decoration:none">FAQ</a>
+    <a href="#s14" style="color:var(--green);text-decoration:none">Troubleshooting</a>
+    <a href="#s15" style="color:var(--green);text-decoration:none">Glosarium</a>
+  </div>
+  <div style="margin-top:14px;font-size:11.5px;color:var(--text-hint)">Panduan Pengguna · Versi 1.0</div>
+</footer>
+
+
+<script>
+function goToDashboard() {
+  var base = window.location.href.split('?')[0];
+  window.location.href = base; // tanpa parameter = halaman home
+}
+</script>
+</body>
+</html>
